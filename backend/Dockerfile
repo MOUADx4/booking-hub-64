@@ -8,19 +8,29 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache Rewrite
 RUN a2enmod rewrite
 
-# Copy project
-COPY . /var/www/html
-
 # Set working directory
 WORKDIR /var/www/html
+
+# Copy project files
+COPY . .
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Expose port
+# Symfony environment
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+# Fix permissions
+RUN chown -R www-data:www-data var
+
+# Warmup cache
+RUN php bin/console cache:clear --env=prod
+RUN php bin/console cache:warmup --env=prod
+
 EXPOSE 80
 
 CMD ["apache2-foreground"]
