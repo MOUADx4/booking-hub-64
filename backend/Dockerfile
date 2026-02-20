@@ -26,9 +26,8 @@ ENV SYMFONY_DOTENV_VARS=1
 # Install PHP dependencies WITHOUT running Symfony scripts
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Fix permissions
-RUN chown -R www-data:www-data var
+# Fix permissions (create var/ before chown)
+RUN mkdir -p var && chown -R www-data:www-data var
 
 # Warmup cache at runtime, not build time
-# (Render injecte les variables d'env APRÈS le build)
 CMD ["apache2-foreground"]
