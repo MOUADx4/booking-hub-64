@@ -29,5 +29,9 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Fix permissions (create var/ before chown)
 RUN mkdir -p var && chown -R www-data:www-data var
 
-# Warmup cache at runtime, not build time
+# Configure Apache to serve the Symfony public/ directory
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
+# Start Apache
 CMD ["apache2-foreground"]
