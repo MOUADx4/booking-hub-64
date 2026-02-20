@@ -8,7 +8,7 @@ RUN a2enmod rewrite
 
 WORKDIR /var/www/html
 
-COPY backend/ /var/www/html/
+COPY . /var/www/html/
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -21,7 +21,3 @@ RUN chown -R www-data:www-data var
 
 RUN php bin/console cache:clear --env=prod
 RUN php bin/console cache:warmup --env=prod
-
-EXPOSE 80
-
-CMD ["apache2-foreground"]
