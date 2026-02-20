@@ -11,8 +11,8 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy ONLY the backend folder
-COPY backend/ .
+# Copy backend code (Render already places us inside /src/backend)
+COPY . .
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
