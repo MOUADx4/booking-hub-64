@@ -31,7 +31,12 @@ RUN mkdir -p var && chown -R www-data:www-data var
 
 # Configure Apache to serve the Symfony public/ directory
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
+# Restore correct Directory permissions for Symfony
+RUN echo "<Directory /var/www/html/> \
+    AllowOverride All \
+</Directory>" > /etc/apache2/conf-available/symfony.conf \
+    && a2enconf symfony
 
 # Start Apache
 CMD ["apache2-foreground"]
