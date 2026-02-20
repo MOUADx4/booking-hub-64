@@ -1,0 +1,68 @@
+security:
+
+  # ✅ Hash automatique des mots de passe
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: auto
+
+  # ✅ Provider basé sur Doctrine (User en DB)
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+
+  firewalls:
+
+    # ✅ Outils Symfony dev (profiler, assets...)
+    dev:
+      pattern: ^/(_profiler|_wdt|css|images|js|assets|build)/
+      security: false
+
+    # ✅ Firewall LOGIN JWT (PUBLIC)
+    login:
+      pattern: ^/api/auth
+      stateless: true
+      json_login:
+        check_path: /api/auth/login
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+    # ✅ Firewall API protégée JWT
+    api:
+      pattern: ^/api
+      stateless: true
+      provider: app_user_provider
+      jwt: ~
+
+    # ✅ Firewall principal (sessions si besoin plus tard)
+    main:
+      lazy: true
+      provider: app_user_provider
+
+  # ✅ Contrôle d’accès (ordre TRÈS important)
+  access_control:
+
+    # 🔓 Public : Auth (register + login)
+    - { path: ^/api/auth, roles: PUBLIC_ACCESS }
+
+    # 🔓 Public : Swagger Documentation
+    - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+
+    # 🔒 Admin uniquement
+    - { path: ^/api/admin, roles: ROLE_ADMIN }
+
+    # 🔒 Toute autre route API nécessite JWT
+    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+
+# ⚡ Optimisation pour les tests
+when@test:
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4
+        time_cost: 3
+        memory_cost: 10
