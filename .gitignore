@@ -31,23 +31,28 @@ lerna-debug.log*
 # BACKEND (Symfony)
 # ============================
 
-/backend/vendor/
-/backend/var/
-/backend/.env.local
-/backend/.env.*.local
 
-# JWT keys
-/backend/config/jwt/private.pem
-/backend/config/jwt/public.pem
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
 
-# Cache
-/backend/.phpunit.result.cache
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
 
-# Composer
-/backend/composer.lock
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
 
-# ============================
-# GLOBAL
-# ============================
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
 
-/.env
