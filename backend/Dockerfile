@@ -11,18 +11,18 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy backend code (Render already places us inside /src/backend)
+# Copy backend code
 COPY . .
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Symfony environment
+# Symfony environment MUST be set BEFORE composer install
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Fix permissions
 RUN chown -R www-data:www-data var
