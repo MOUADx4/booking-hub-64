@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache Rewrite
 RUN a2enmod rewrite
 
-# Set working directory
+# Set working directory INSIDE backend
 WORKDIR /var/www/html
 
-# Copy backend code
-COPY . .
+# Copy ONLY backend folder
+COPY backend/ /var/www/html/
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
