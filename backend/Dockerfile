@@ -17,16 +17,18 @@ COPY backend/ /var/www/html/
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Symfony environment MUST be set BEFORE composer install
+# Prevent Symfony from loading .env during build
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+ENV SYMFONY_SKIP_ENV_CHECK=1
+ENV SYMFONY_DOTENV_VARS=1
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP dependencies WITHOUT running Symfony scripts
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Fix permissions
 RUN chown -R www-data:www-data var
 
-# Warmup cache
-RUN php bin/console cache:clear --env=prod
-RUN php bin/console cache:warmup --env=prod
+# Warmup cache at runtime, not build time
+# (Render injecte les variables d'env APRÈS le build)
+CMD ["apache2-foreground"]
