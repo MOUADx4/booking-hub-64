@@ -26,16 +26,12 @@ ENV SYMFONY_DOTENV_VARS=1
 # Install PHP dependencies WITHOUT running Symfony scripts
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Fix permissions
+# Fix permissions (create var/ before chown)
 RUN mkdir -p var && chown -R www-data:www-data var
 
 # Configure Apache to serve the Symfony public/ directory
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
-# Restore correct Directory permissions for Symfony
-RUN printf "<Directory /var/www/html/>\n    AllowOverride All\n</Directory>\n" \
-    > /etc/apache2/conf-available/symfony.conf \
-    && a2enconf symfony
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
 
 # Start Apache
 CMD ["apache2-foreground"]
